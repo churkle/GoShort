@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"io"
 	"log"
 	"math/rand"
@@ -13,6 +14,10 @@ import (
 
 var letterSet = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
 var pool *redis.Pool
+
+type urlStruct struct {
+	URL string
+}
 
 func get(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
@@ -30,9 +35,15 @@ func get(w http.ResponseWriter, r *http.Request) {
 
 func post(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	vars := mux.Vars(r)
+	decoder := json.NewDecoder(r.Body)
+	var jsonURL urlStruct
+	err := decoder.Decode(&jsonURL)
 
-	id, err := shortenURL(vars["url"])
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	id, err := shortenURL(jsonURL.URL)
 
 	if err != nil {
 		log.Fatal(err)
@@ -60,7 +71,7 @@ func setupRouter() {
 	r := mux.NewRouter()
 	api := r.PathPrefix("/api/v1").Subrouter()
 	api.HandleFunc("/{id}", get).Methods(http.MethodGet)
-	api.HandleFunc("/shorten/{url}", post).Methods(http.MethodPost)
+	api.HandleFunc("/shorten", post).Methods(http.MethodPost)
 	log.Fatal(http.ListenAndServe(":8080", r))
 }
 
