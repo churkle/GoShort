@@ -14,36 +14,52 @@
           >
             <v-card class="elevation-12">
               <v-card-text>
-                <v-row>
+                <transition name="fade">
+                  <v-row v-if="showForm">
+                    <v-col
+                      cols="10" 
+                      sm="10"
+                    >
+                      <v-text-field
+                        v-model="url"
+                        id="urlField"
+                        label="URL"
+                        name="urlField"
+                        type="string"
+                        placeholder="www.example.com"
+                      />
+                    </v-col>
+                    <v-col 
+                      cols="2"
+                      sm="2"
+                      align-center
+                    >
+                      <v-btn color="primary" v-on:click="submitUrl">Shorten!</v-btn>
+                    </v-col>
+                  </v-row>
+                </transition>
+                <v-row v-if="!showForm">
                   <v-col
-                    cols="10" 
-                    sm="10"
+                      cols="10" 
+                      sm="10"
                   >
                     <v-text-field
-                      v-model="url"
-                      id="urlField"
-                      label="URL"
-                      name="urlField"
-                      type="string"
-                      placeholder="www.example.com"
-                    />
-                    <v-text-field
-                      id="shortLinkBox"
-                      label="Your Shortened Link!"
-                      name="shortLinkBox"
-                      type="string"
-                      readonly="true"
-                      v-model="shortLink"
-                      outlined="true"
-                      rounded="true"
+                        id="shortLinkBox"
+                        label="Your Shortened Link!"
+                        name="shortLinkBox"
+                        type="string"
+                        readonly="true"
+                        v-model="shortLink"
+                        outlined="true"
+                        rounded="true"
                     />
                   </v-col>
                   <v-col 
-                    cols="2"
-                    sm="2"
-                    align-center
+                      cols="2"
+                      sm="2"
+                      align-center
                   >
-                    <v-btn color="primary" v-on:click="submitUrl">Shorten!</v-btn>
+                    <v-btn color="primary" v-on:click="copyUrl">Copy</v-btn>
                   </v-col>
                 </v-row>
               </v-card-text>
@@ -62,16 +78,21 @@ export default {
   data: () => ({
     url: '',
     shortLink: '',
+    showForm: 'true',
   }),
   methods: {
     submitUrl: function () {
       axios.post("http://localhost:8080/api/v1/shorten",{
         url: this.url
       }).then((response) => {
-        console.log(response);
+        console.log(response)
         this.shortLink = "http://localhost:8080/" + response.data
         console.log(this.shortLink)
+        this.showForm = ''
       });
+    },
+    copyUrl: function () {
+
     }
   }
 };
