@@ -86,7 +86,7 @@ export default {
         url: this.url
       }).then((response) => {
         console.log(response)
-        this.shortLink = "http://localhost:8080/" + response.data
+        this.shortLink = "http://localhost:3030/" + response.data
         console.log(this.shortLink)
         this.showForm = ''
       });
