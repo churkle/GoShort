@@ -13,7 +13,7 @@ export default {
   name: 'App',
 
   components: {
-    URLBox,
+    URLBox
   },
 
   data: () => ({
